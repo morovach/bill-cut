@@ -1,0 +1,85 @@
+<meta name="viewport" content="width=device-width">
+
+<head>
+    <link rel="stylesheet" type="text/css" href="home.css">
+</head>
+
+<script>
+    $number_of_people = 0;
+    $total_bill = 0;
+    $array_offset= [];
+</script>
+
+<div class="main-space">
+    <h2>Quel est le montant total de l'addition?</h2>
+</div>
+<div class="main-space">
+    <input type="text" onchange="setBill()" id="total_bill" placeholder="Montant de l'addition"/>
+</div>
+<div class="main-space">
+    <h2>Combien de personnes vont participer?</h2>
+</div>
+<div class="main-space">
+    <input type="text" id="textbox_id" placeholder="Nombre de personne"/>
+    <button id="demo" onclick="create_table()">OK</button>
+</div>
+<div class="main-space">
+    <p id="number_people"></p>
+    <table id="table-people"></table>
+</div>
+
+<script>
+    function setBill(){
+        $total_bill=document.getElementById('total_bill').value;
+    }
+
+    function create_table() {
+        <!-- $number_of_people = $number_of_people+1; -->
+
+        $number_of_people=document.getElementById('textbox_id').value;
+        <!-- document.getElementById("number_people").innerHTML = $number_of_people+" people sharing"; -->
+        $array_offset=[];
+        var average= $total_bill/$number_of_people;
+        document.getElementById("table-people").innerHTML="";
+        for (i = 0; i < $number_of_people; i++) {
+            var parenttbl = document.getElementById("table-people");
+            var newel = document.createElement('tr');
+            var elementid = document.getElementsByTagName("tr").length
+            $array_offset.push({money_to_pay:0, offset_amount:0});
+            newel.setAttribute('id',"row#"+elementid);
+            newel.innerHTML = ' \
+                    <td class="col20" id="row#'+elementid+'-col_--"><button class="width100" id= "button_less_less" onclick="set_offset(-'+average/3+','+elementid+')">--</button></td> \
+                    <td class="col10" id="row#'+elementid+'-col_-"><button class="width100" id= "button_less" onclick="set_offset(-'+average/10+','+elementid+')">-</button></td> \
+                    <td class="col40" id="row#'+elementid+'-col_NAME"><input class="width100" type="text" maxlength="512" id="textbox_id" placeholder="Pr&eacute;nom/initiales"/></td> \
+                    <td class="col10" id="row#'+elementid+'-col_+"><button class="width100" id= "button_more" onclick="set_offset('+average/10+','+elementid+')">+</button></td> \
+                    <td class="col10" id="row#'+elementid+'-col_++"><button  class="width100"id= "button_more_more" onclick="set_offset(+'+average/3+','+elementid+')">++</button></td> \
+                    <td class="col20" id="row#'+elementid+'-col_money"><p class="money_disp width100" id="money_'+elementid+'">'+Math.ceil($total_bill/$number_of_people)+'</p></td> \
+            '
+            parenttbl.appendChild(newel);
+        }
+    }
+    
+    function set_offset(amount,elementid) {   
+        <!-- $array_offset[elementid].offset_amount=$array_offset[elementid].offset_amount+amount; -->
+        $array_offset[elementid].offset_amount=amount;
+        recalculate_money();
+    }
+    
+    <!-- To calculate the new money: -->
+    <!-- The new average = (Total_bill - <The_sum_of_all_the_offsets> )/ number_of_people -->
+    <!-- Every one will have thus to pay: the_new_avg + his_own_offset -->
+    function recalculate_money(){
+        var $offset_sum=0;
+        for(i = 0; i<$number_of_people; i++)
+        {
+            $offset_sum=$offset_sum+$array_offset[i].offset_amount;
+        }
+        var $new_average= ($total_bill-$offset_sum)/$number_of_people;
+        for(i = 0; i<$number_of_people; i++){
+            $array_offset[i].money_to_pay=Math.ceil($new_average+$array_offset[i].offset_amount);
+            document.getElementById("money_"+i).innerHTML = Math.ceil($array_offset[i].money_to_pay);
+        }
+    }
+    
+</script>
+
